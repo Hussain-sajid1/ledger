@@ -428,6 +428,15 @@
         }
 
         @media (max-width: 600px) {
+            html, body {
+                overflow-x: hidden !important;
+                max-width: 100vw !important;
+            }
+            .main-content, .ledger-container, .ledger-header, .ledger-content {
+                max-width: 100vw !important;
+                box-sizing: border-box;
+                word-break: break-word;
+            }
             .main-content {
                 padding: 1rem 0.25rem;
             }
