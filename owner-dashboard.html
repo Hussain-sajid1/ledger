@@ -1,0 +1,999 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Owner Dashboard - DAWOOD AB COLLECTION</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 1rem 0;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .nav {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 2rem;
+        }
+
+        .logo {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #333;
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #333;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+
+        .nav-links a:hover {
+            background-color: #f0f0f0;
+        }
+
+        .logout-btn {
+            background: #ff6b6b;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            transition: background-color 0.3s;
+        }
+
+        .logout-btn:hover {
+            background: #ff5252;
+        }
+
+        .main-content {
+            flex: 1;
+            padding: 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .dashboard-header {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(10px);
+        }
+
+        .dashboard-title {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .dashboard-title h1 {
+            color: #333;
+            font-size: 2.5rem;
+        }
+
+        .owner-icon {
+            font-size: 2.5rem;
+            color: #667eea;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            opacity: 0.9;
+            font-size: 0.9rem;
+        }
+
+        .dashboard-content {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 2rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(10px);
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .section-title {
+            color: #333;
+            font-size: 1.8rem;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 0.5rem;
+        }
+
+        .add-customer-btn {
+            background: #17a2b8;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.3s;
+        }
+
+        .add-customer-btn:hover {
+            background: #138496;
+        }
+
+        .export-btn {
+            background: #ff9800;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.3s;
+            margin-left: 1rem;
+        }
+
+        .export-btn:hover {
+            background: #f57c00;
+        }
+
+        .customers-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .customers-table th,
+        .customers-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid #e1e1e1;
+        }
+
+        .customers-table th {
+            background: #667eea;
+            color: white;
+            font-weight: 600;
+        }
+
+        .customers-table tr:hover {
+            background: #f8f9fa;
+        }
+
+        .balance {
+            font-weight: bold;
+        }
+
+        .balance.positive {
+            color: #28a745;
+        }
+
+        .balance.negative {
+            color: #dc3545;
+        }
+
+        .view-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 0.9rem;
+            transition: background-color 0.3s;
+        }
+
+        .view-btn:hover {
+            background: #5a6fd8;
+        }
+
+        .delete-btn {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 0.9rem;
+            transition: background-color 0.3s;
+            margin-left: 0.5rem;
+        }
+
+        .delete-btn:hover {
+            background: #c82333;
+        }
+
+        .search-box {
+            width: 100%;
+            max-width: 300px;
+            padding: 0.75rem;
+            border: 2px solid #e1e1e1;
+            border-radius: 8px;
+            font-size: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .search-box:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-content {
+            background: white;
+            margin: 5% auto;
+            padding: 2rem;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            position: relative;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid #667eea;
+        }
+
+        .modal-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .close {
+            color: #aaa;
+            font-size: 2rem;
+            font-weight: bold;
+            cursor: pointer;
+            line-height: 1;
+        }
+
+        .close:hover {
+            color: #333;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .form-group {
+            flex: 1;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #333;
+            font-weight: 500;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid #e1e1e1;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+            margin-top: 2rem;
+        }
+
+        .btn-cancel {
+            background: #6c757d;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.3s;
+        }
+
+        .btn-cancel:hover {
+            background: #5a6268;
+        }
+
+        .btn-save {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.3s;
+        }
+
+        .btn-save:hover {
+            background: #45a049;
+        }
+
+        .success-message {
+            background: #d4edda;
+            color: #155724;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            border: 1px solid #c3e6cb;
+            display: none;
+        }
+
+        #toast {
+            opacity: 0;
+        }
+        #toast.show {
+            display: block;
+            opacity: 1;
+        }
+
+        @media (max-width: 768px) {
+            .dashboard-title h1 {
+                font-size: 2rem;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .customers-table {
+                font-size: 0.9rem;
+            }
+            
+            .customers-table th,
+            .customers-table td {
+                padding: 0.75rem 0.5rem;
+            }
+            
+            .section-header {
+                flex-direction: column;
+                gap: 1rem;
+                align-items: flex-start;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <nav class="nav">
+            <a href="index.html" class="logo">DAWOOD AB COLLECTION</a>
+            <div class="nav-links">
+                <a href="customer-login.html">Customer Login</a>
+                <a href="owner-login.html">Owner Login</a>
+                <a href="owner-login.html" class="logout-btn">Logout</a>
+            </div>
+        </nav>
+    </header>
+
+    <main class="main-content">
+        <div class="dashboard-header">
+            <div class="dashboard-title">
+                <div class="owner-icon">👑</div>
+                <h1>Owner Dashboard</h1>
+            </div>
+            <p>Manage all customer ledgers and transactions</p>
+            
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-number" id="totalCustomers">0</div>
+                    <div class="stat-label">Total Customers</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="totalBalance">PKR 0</div>
+                    <div class="stat-label">Total Outstanding</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="totalTransactions">0</div>
+                    <div class="stat-label">Total Transactions</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="dashboard-content">
+            <div class="section-header">
+                <h2 class="section-title">Customer Ledgers</h2>
+                <div>
+                    <button class="add-customer-btn" onclick="showAddCustomerModal()">Add Customer</button>
+                    <button class="export-btn" onclick="exportLedgerAsImage()">Save as JPG</button>
+                    <button class="export-btn" style="background: #007bff; margin-left: 1rem;" onclick="saveProgress()">Save Progress</button>
+                </div>
+            </div>
+
+            <input type="text" class="search-box" id="searchBox" placeholder="Search customers by name or phone...">
+
+            <table class="customers-table">
+                <thead>
+                    <tr>
+                        <th>Customer Name</th>
+                        <th>Phone Number</th>
+                        <th>Current Balance</th>
+                        <th>Total Transactions</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="customersTableBody">
+                    <tr>
+                        <td colspan="5" style="text-align: center; padding: 2rem;">Loading customers...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </main>
+
+    <!-- Add Customer Modal -->
+    <div id="addCustomerModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Add New Customer</h2>
+                <span class="close" onclick="closeAddCustomerModal()">&times;</span>
+            </div>
+            
+            <div class="success-message" id="successMessage">
+                Customer added successfully!
+            </div>
+            
+            <form id="addCustomerForm">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="customerName">Customer Name</label>
+                        <input type="text" id="customerName" placeholder="Enter customer full name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="customerPhone">Phone Number</label>
+                        <input type="tel" id="customerPhone" placeholder="03XXXXXXXXX" required>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="customerAddress">Address (Optional)</label>
+                    <textarea id="customerAddress" placeholder="Enter customer address"></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="initialBalance">Initial Balance (PKR)</label>
+                    <input type="number" id="initialBalance" value="0" min="0" step="0.01" required>
+                    <small style="color: #666; font-size: 0.9rem;">Leave as 0 if no initial balance</small>
+                </div>
+                
+                <div class="modal-buttons">
+                    <button type="button" class="btn-cancel" onclick="closeAddCustomerModal()">Cancel</button>
+                    <button type="submit" class="btn-save">Add Customer</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Delete Customer Confirmation Modal -->
+    <div id="deleteCustomerModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Delete Customer</h2>
+                <span class="close" onclick="closeDeleteCustomerModal()">&times;</span>
+            </div>
+            
+            <div class="success-message" id="deleteSuccessMessage" style="background: #d4edda; color: #155724; border: 1px solid #c3e6cb;">
+                Customer deleted successfully!
+            </div>
+            
+            <div id="deleteConfirmationContent">
+                <p style="margin-bottom: 1rem; color: #666;">Are you sure you want to delete this customer?</p>
+                
+                <div style="background: #f8f9fa; padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem;">
+                    <h4 style="margin-bottom: 0.5rem; color: #333;">Customer Details:</h4>
+                    <p style="margin: 0.25rem 0; color: #666;"><strong>Name:</strong> <span id="deleteCustomerName"></span></p>
+                    <p style="margin: 0.25rem 0; color: #666;"><strong>Phone:</strong> <span id="deleteCustomerPhone"></span></p>
+                    <p style="margin: 0.25rem 0; color: #666;"><strong>Current Balance:</strong> <span id="deleteCustomerBalance"></span></p>
+                    <p style="margin: 0.25rem 0; color: #666;"><strong>Total Transactions:</strong> <span id="deleteCustomerTransactions"></span></p>
+                </div>
+                
+                <div style="background: #fff3cd; border: 1px solid #ffeaa7; padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem;">
+                    <p style="margin: 0; color: #856404; font-weight: bold;">⚠️ Warning:</p>
+                    <p style="margin: 0.5rem 0 0 0; color: #856404;">This action cannot be undone. All customer data and transaction history will be permanently deleted.</p>
+                </div>
+                
+                <div class="modal-buttons">
+                    <button type="button" class="btn-cancel" onclick="closeDeleteCustomerModal()">Cancel</button>
+                    <button type="button" class="btn-save" onclick="confirmDeleteCustomer()" style="background: #dc3545;">Delete Customer</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast" style="display:none; position: fixed; bottom: 30px; right: 30px; background: #333; color: #fff; padding: 1rem 2rem; border-radius: 8px; font-size: 1.1rem; z-index: 9999; opacity: 0; transition: opacity 0.5s; box-shadow: 0 4px 16px rgba(0,0,0,0.2);">Progress saved!</div>
+
+    <script>
+        // Check if owner is logged in
+        const ownerLoggedIn = sessionStorage.getItem('ownerLoggedIn');
+        
+        if (!ownerLoggedIn) {
+            // Redirect to login if not logged in
+            window.location.href = 'owner-login.html';
+        }
+
+        // Load customers from localStorage if available
+        let customers = {};
+        if (localStorage.getItem('dawood_ab_collection_customers')) {
+            try {
+                customers = JSON.parse(localStorage.getItem('dawood_ab_collection_customers'));
+            } catch (e) {
+                customers = {};
+            }
+        } else {
+            // Sample customer data (in a real app, this would come from a database)
+            customers = {
+                '03001234567': {
+                    name: 'Ahmed Khan',
+                    phone: '03001234567',
+                    balance: 15000,
+                    transactions: [
+                        { date: '2024-01-15', description: 'Fabric Purchase - Lawn', amount: 5000, type: 'debit' },
+                        { date: '2024-01-10', description: 'Payment Received', amount: 3000, type: 'credit' },
+                        { date: '2024-01-05', description: 'Fabric Purchase - Silk', amount: 8000, type: 'debit' },
+                        { date: '2024-01-01', description: 'Payment Received', amount: 5000, type: 'credit' }
+                    ]
+                },
+                '03009876543': {
+                    name: 'Fatima Ali',
+                    phone: '03009876543',
+                    balance: 2500,
+                    transactions: [
+                        { date: '2024-01-12', description: 'Fabric Purchase - Cotton', amount: 3500, type: 'debit' },
+                        { date: '2024-01-08', description: 'Payment Received', amount: 1000, type: 'credit' }
+                    ]
+                },
+                '03005556677': {
+                    name: 'Muhammad Hassan',
+                    phone: '03005556677',
+                    balance: 7500,
+                    transactions: [
+                        { date: '2024-01-14', description: 'Fabric Purchase - Linen', amount: 12000, type: 'debit' },
+                        { date: '2024-01-12', description: 'Payment Received', amount: 4500, type: 'credit' }
+                    ]
+                }
+            };
+        }
+
+        // Calculate dashboard statistics
+        function updateDashboardStats() {
+            const customerList = Object.values(customers);
+            const totalCustomers = customerList.length;
+            const totalBalance = customerList.reduce((sum, customer) => sum + customer.balance, 0);
+            const totalTransactions = customerList.reduce((sum, customer) => sum + customer.transactions.length, 0);
+
+            document.getElementById('totalCustomers').textContent = totalCustomers;
+            document.getElementById('totalBalance').textContent = `PKR ${totalBalance.toLocaleString()}`;
+            document.getElementById('totalTransactions').textContent = totalTransactions;
+        }
+
+        // Populate customers table
+        function populateCustomersTable() {
+            const tableBody = document.getElementById('customersTableBody');
+            tableBody.innerHTML = '';
+
+            Object.values(customers).forEach(customer => {
+                const row = document.createElement('tr');
+                
+                const balanceClass = customer.balance >= 0 ? 'positive' : 'negative';
+                const balanceText = customer.balance >= 0 ? 
+                    `PKR ${customer.balance.toLocaleString()}` : 
+                    `PKR ${Math.abs(customer.balance).toLocaleString()}`;
+
+                row.innerHTML = `
+                    <td>${customer.name}</td>
+                    <td>${customer.phone}</td>
+                    <td class="balance ${balanceClass}">${balanceText}</td>
+                    <td>${customer.transactions.length}</td>
+                    <td>
+                        <button class="view-btn" onclick="viewCustomerLedger('${customer.phone}')">View Ledger</button>
+                        <button class="delete-btn" onclick="showDeleteCustomerModal('${customer.phone}')">Delete</button>
+                    </td>
+                `;
+                
+                tableBody.appendChild(row);
+            });
+        }
+
+        // Search functionality
+        document.getElementById('searchBox').addEventListener('input', function(e) {
+            const searchTerm = e.target.value.toLowerCase();
+            const tableBody = document.getElementById('customersTableBody');
+            const rows = tableBody.getElementsByTagName('tr');
+
+            Array.from(rows).forEach(row => {
+                const name = row.cells[0]?.textContent.toLowerCase() || '';
+                const phone = row.cells[1]?.textContent.toLowerCase() || '';
+                
+                if (name.includes(searchTerm) || phone.includes(searchTerm)) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        });
+
+        // View customer ledger
+        function viewCustomerLedger(phoneNumber) {
+            if (customers[phoneNumber]) {
+                sessionStorage.setItem('currentCustomer', JSON.stringify(customers[phoneNumber]));
+                window.location.href = 'customer-ledger.html';
+            }
+        }
+
+        // Add customer modal functions
+        function showAddCustomerModal() {
+            const modal = document.getElementById('addCustomerModal');
+            
+            // Show modal
+            modal.style.display = 'block';
+            
+            // Hide success message if visible
+            document.getElementById('successMessage').style.display = 'none';
+        }
+
+        function closeAddCustomerModal() {
+            const modal = document.getElementById('addCustomerModal');
+            modal.style.display = 'none';
+            
+            // Reset form
+            document.getElementById('addCustomerForm').reset();
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const addCustomerModal = document.getElementById('addCustomerModal');
+            const deleteCustomerModal = document.getElementById('deleteCustomerModal');
+            
+            if (event.target === addCustomerModal) {
+                closeAddCustomerModal();
+            }
+            if (event.target === deleteCustomerModal) {
+                closeDeleteCustomerModal();
+            }
+        }
+
+        // Delete customer functionality
+        let customerToDelete = null;
+
+        function showDeleteCustomerModal(phoneNumber) {
+            const customer = customers[phoneNumber];
+            if (!customer) return;
+            
+            customerToDelete = phoneNumber;
+            
+            const modal = document.getElementById('deleteCustomerModal');
+            const deleteCustomerName = document.getElementById('deleteCustomerName');
+            const deleteCustomerPhone = document.getElementById('deleteCustomerPhone');
+            const deleteCustomerBalance = document.getElementById('deleteCustomerBalance');
+            const deleteCustomerTransactions = document.getElementById('deleteCustomerTransactions');
+            
+            // Populate customer details
+            deleteCustomerName.textContent = customer.name;
+            deleteCustomerPhone.textContent = customer.phone;
+            
+            const balanceText = customer.balance >= 0 ? 
+                `PKR ${customer.balance.toLocaleString()}` : 
+                `PKR ${Math.abs(customer.balance).toLocaleString()}`;
+            deleteCustomerBalance.textContent = balanceText;
+            deleteCustomerTransactions.textContent = customer.transactions.length;
+            
+            // Show modal
+            modal.style.display = 'block';
+            
+            // Hide success message if visible
+            document.getElementById('deleteSuccessMessage').style.display = 'none';
+            document.getElementById('deleteConfirmationContent').style.display = 'block';
+        }
+
+        function closeDeleteCustomerModal() {
+            const modal = document.getElementById('deleteCustomerModal');
+            modal.style.display = 'none';
+            customerToDelete = null;
+        }
+
+        function confirmDeleteCustomer() {
+            if (!customerToDelete) return;
+            
+            // Delete customer from customers object
+            delete customers[customerToDelete];
+            saveProgress();
+            
+            // Update dashboard
+            updateDashboardStats();
+            populateCustomersTable();
+            
+            // Show success message
+            const successMessage = document.getElementById('deleteSuccessMessage');
+            const confirmationContent = document.getElementById('deleteConfirmationContent');
+            
+            confirmationContent.style.display = 'none';
+            successMessage.style.display = 'block';
+            
+            // Close modal after 2 seconds
+            setTimeout(() => {
+                closeDeleteCustomerModal();
+            }, 2000);
+        }
+
+        // Handle customer form submission
+        document.getElementById('addCustomerForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const customerName = document.getElementById('customerName').value.trim();
+            const customerPhone = document.getElementById('customerPhone').value.trim();
+            const customerAddress = document.getElementById('customerAddress').value.trim();
+            const initialBalance = parseFloat(document.getElementById('initialBalance').value) || 0;
+            
+            if (!customerName || !customerPhone) {
+                alert('Please fill in customer name and phone number');
+                return;
+            }
+            
+            // Check if phone number already exists
+            if (customers[customerPhone]) {
+                alert('A customer with this phone number already exists');
+                return;
+            }
+            
+            // Validate phone number format (Pakistani format)
+            const phoneRegex = /^03\d{9}$/;
+            if (!phoneRegex.test(customerPhone)) {
+                alert('Please enter a valid Pakistani phone number (e.g., 03001234567)');
+                return;
+            }
+            
+            // Create new customer
+            const newCustomer = {
+                name: customerName,
+                phone: customerPhone,
+                address: customerAddress,
+                balance: initialBalance,
+                transactions: []
+            };
+            
+            // Add initial balance transaction if not zero
+            if (initialBalance > 0) {
+                newCustomer.transactions.push({
+                    date: new Date().toISOString().split('T')[0],
+                    description: 'Initial Balance',
+                    amount: initialBalance,
+                    type: 'debit'
+                });
+            }
+            
+            // Add customer to customers object
+            customers[customerPhone] = newCustomer;
+            saveProgress();
+            
+            // Update dashboard
+            updateDashboardStats();
+            populateCustomersTable();
+            
+            // Close modal
+            closeAddCustomerModal();
+            
+            // Show success message
+            const successMessage = document.getElementById('successMessage');
+            successMessage.style.display = 'block';
+            
+            // Hide success message after 3 seconds
+            setTimeout(() => {
+                successMessage.style.display = 'none';
+            }, 3000);
+        });
+
+        // Export ledger as JPG image
+        function exportLedgerAsImage() {
+            // Create a canvas element
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            
+            // Set canvas size
+            canvas.width = 1200;
+            canvas.height = 800;
+            
+            // Set background
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // Add header
+            ctx.fillStyle = '#667eea';
+            ctx.fillRect(0, 0, canvas.width, 100);
+            
+            // Add title
+            ctx.fillStyle = '#ffffff';
+            ctx.font = 'bold 32px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('DAWOOD AB COLLECTION - LEDGER REPORT', canvas.width / 2, 40);
+            
+            ctx.font = '16px Arial';
+            ctx.fillText(`Generated on: ${new Date().toLocaleDateString('en-PK')}`, canvas.width / 2, 65);
+            
+            // Add statistics
+            const customerList = Object.values(customers);
+            const totalCustomers = customerList.length;
+            const totalBalance = customerList.reduce((sum, customer) => sum + customer.balance, 0);
+            const totalTransactions = customerList.reduce((sum, customer) => sum + customer.transactions.length, 0);
+            
+            ctx.fillStyle = '#333333';
+            ctx.font = 'bold 20px Arial';
+            ctx.textAlign = 'left';
+            ctx.fillText('Summary:', 50, 140);
+            
+            ctx.font = '16px Arial';
+            ctx.fillText(`Total Customers: ${totalCustomers}`, 50, 170);
+            ctx.fillText(`Total Outstanding Balance: PKR ${totalBalance.toLocaleString()}`, 50, 195);
+            ctx.fillText(`Total Transactions: ${totalTransactions}`, 50, 220);
+            
+            // Add customer table header
+            ctx.fillStyle = '#667eea';
+            ctx.fillRect(50, 250, canvas.width - 100, 40);
+            
+            ctx.fillStyle = '#ffffff';
+            ctx.font = 'bold 16px Arial';
+            ctx.textAlign = 'left';
+            ctx.fillText('Customer Name', 70, 275);
+            ctx.fillText('Phone Number', 300, 275);
+            ctx.fillText('Balance', 500, 275);
+            ctx.fillText('Transactions', 700, 275);
+            
+            // Add customer data
+            let yPosition = 320;
+            ctx.fillStyle = '#333333';
+            ctx.font = '14px Arial';
+            
+            customerList.forEach((customer, index) => {
+                // Alternate row colors
+                if (index % 2 === 0) {
+                    ctx.fillStyle = '#f8f9fa';
+                    ctx.fillRect(50, yPosition - 20, canvas.width - 100, 30);
+                }
+                
+                ctx.fillStyle = '#333333';
+                ctx.fillText(customer.name, 70, yPosition);
+                ctx.fillText(customer.phone, 300, yPosition);
+                
+                // Color code balance
+                if (customer.balance >= 0) {
+                    ctx.fillStyle = '#28a745';
+                } else {
+                    ctx.fillStyle = '#dc3545';
+                }
+                ctx.fillText(`PKR ${customer.balance.toLocaleString()}`, 500, yPosition);
+                
+                ctx.fillStyle = '#333333';
+                ctx.fillText(customer.transactions.length.toString(), 700, yPosition);
+                
+                yPosition += 35;
+            });
+            
+            // Add footer
+            ctx.fillStyle = '#666666';
+            ctx.font = '12px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('DAWOOD AB COLLECTION - Premium Unstitched Fabric Store', canvas.width / 2, canvas.height - 20);
+            
+            // Convert canvas to blob and download
+            canvas.toBlob(function(blob) {
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `DAWOOD_AB_COLLECTION_LEDGER_${new Date().toISOString().split('T')[0]}.jpg`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            }, 'image/jpeg', 0.9);
+        }
+
+        // Save progress to localStorage
+        function saveProgress() {
+            localStorage.setItem('dawood_ab_collection_customers', JSON.stringify(customers));
+            const toast = document.getElementById('toast');
+            toast.textContent = 'Progress saved!';
+            toast.classList.add('show');
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 1500);
+        }
+
+        // Initialize dashboard
+        updateDashboardStats();
+        populateCustomersTable();
+    </script>
+</body>
+</html> 

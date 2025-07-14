@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Login - DAWOOD AB COLLECTION</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 1rem 0;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .nav {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 2rem;
+        }
+
+        .logo {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #333;
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #333;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+
+        .nav-links a:hover {
+            background-color: #f0f0f0;
+        }
+
+        .main-content {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+
+        .login-container {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 3rem;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            max-width: 400px;
+            backdrop-filter: blur(10px);
+        }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .login-header h1 {
+            color: #333;
+            margin-bottom: 0.5rem;
+        }
+
+        .login-header p {
+            color: #666;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #333;
+            font-weight: 500;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 1rem;
+            border: 2px solid #e1e1e1;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 1rem;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .btn:hover {
+            background: #5a6fd8;
+        }
+
+        .back-link {
+            text-align: center;
+            margin-top: 1.5rem;
+        }
+
+        .back-link a {
+            color: #667eea;
+            text-decoration: none;
+        }
+
+        .back-link a:hover {
+            text-decoration: underline;
+        }
+
+        .error-message {
+            background: #ff6b6b;
+            color: white;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .login-container {
+                margin: 1rem;
+                padding: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <nav class="nav">
+            <a href="index.html" class="logo">DAWOOD AB COLLECTION</a>
+            <div class="nav-links">
+                <a href="customer-login.html">Customer Login</a>
+                <a href="owner-login.html">Owner Login</a>
+            </div>
+        </nav>
+    </header>
+
+    <main class="main-content">
+        <div class="login-container">
+            <div class="login-header">
+                <h1>Customer Login</h1>
+                <p>Enter your phone number to view your ledger</p>
+            </div>
+
+            <div class="error-message" id="errorMessage">
+                Invalid phone number. Please try again.
+            </div>
+
+            <form id="customerLoginForm">
+                <div class="form-group">
+                    <label for="phoneNumber">Phone Number</label>
+                    <input type="tel" id="phoneNumber" name="phoneNumber" placeholder="03XXXXXXXXX" required>
+                </div>
+
+                <button type="submit" class="btn">View My Ledger</button>
+            </form>
+
+            <div class="back-link">
+                <a href="index.html">← Back to Home</a>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Load customers from localStorage if available, otherwise use sample data
+        let customers = {};
+        if (localStorage.getItem('dawood_ab_collection_customers')) {
+            try {
+                customers = JSON.parse(localStorage.getItem('dawood_ab_collection_customers'));
+            } catch (e) {
+                customers = {};
+            }
+        } else {
+            customers = {
+                '03001234567': {
+                    name: 'Ahmed Khan',
+                    phone: '03001234567',
+                    balance: 15000,
+                    transactions: [
+                        { date: '2024-01-15', description: 'Fabric Purchase - Lawn', amount: 5000, type: 'debit' },
+                        { date: '2024-01-10', description: 'Payment Received', amount: 3000, type: 'credit' },
+                        { date: '2024-01-05', description: 'Fabric Purchase - Silk', amount: 8000, type: 'debit' },
+                        { date: '2024-01-01', description: 'Payment Received', amount: 5000, type: 'credit' }
+                    ]
+                },
+                '03009876543': {
+                    name: 'Fatima Ali',
+                    phone: '03009876543',
+                    balance: 2500,
+                    transactions: [
+                        { date: '2024-01-12', description: 'Fabric Purchase - Cotton', amount: 3500, type: 'debit' },
+                        { date: '2024-01-08', description: 'Payment Received', amount: 1000, type: 'credit' }
+                    ]
+                },
+                '03005556677': {
+                    name: 'Muhammad Hassan',
+                    phone: '03005556677',
+                    balance: 7500,
+                    transactions: [
+                        { date: '2024-01-14', description: 'Fabric Purchase - Linen', amount: 12000, type: 'debit' },
+                        { date: '2024-01-12', description: 'Payment Received', amount: 4500, type: 'credit' }
+                    ]
+                }
+            };
+        }
+
+        document.getElementById('customerLoginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const phoneNumber = document.getElementById('phoneNumber').value.trim();
+            const errorMessage = document.getElementById('errorMessage');
+            
+            if (customers[phoneNumber]) {
+                // Store customer data in sessionStorage and redirect to ledger
+                sessionStorage.setItem('currentCustomer', JSON.stringify(customers[phoneNumber]));
+                window.location.href = 'customer-ledger.html';
+            } else {
+                errorMessage.style.display = 'block';
+                setTimeout(() => {
+                    errorMessage.style.display = 'none';
+                }, 3000);
+            }
+        });
+    </script>
+</body>
+</html> 
