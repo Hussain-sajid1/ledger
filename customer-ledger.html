@@ -407,6 +407,20 @@
             display: none;
         }
 
+        .edit-btn {
+            background: #ffc107;
+            color: #333;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-left: 0.5rem;
+            transition: background-color 0.3s;
+        }
+        .edit-btn:hover {
+            background: #e0a800;
+        }
+
         @media (max-width: 768px) {
             .ledger-header h1 {
                 font-size: 2rem;
@@ -604,6 +618,7 @@
                                 <th>Description</th>
                                 <th>Type</th>
                                 <th>Amount (PKR)</th>
+                                <th>Actions</th>
                             </tr>
                         </thead>
                         <tbody id="transactionsTableBody">
@@ -691,6 +706,41 @@
         </div>
     </div>
 
+    <!-- Edit Transaction Modal -->
+    <div id="editTransactionModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Edit Transaction</h2>
+                <span class="close" onclick="closeEditTransactionModal()">&times;</span>
+            </div>
+            <form id="editTransactionForm">
+                <div class="form-group">
+                    <label for="editDate">Date</label>
+                    <input type="date" id="editDate" required>
+                </div>
+                <div class="form-group">
+                    <label for="editDescription">Description</label>
+                    <input type="text" id="editDescription" required>
+                </div>
+                <div class="form-group">
+                    <label for="editAmount">Amount (PKR)</label>
+                    <input type="number" id="editAmount" required style="border: 2px solid #ffc107; background: #fffbe6;">
+                </div>
+                <div class="form-group">
+                    <label for="editType">Type</label>
+                    <select id="editType" required>
+                        <option value="debit">Purchase</option>
+                        <option value="credit">Payment</option>
+                    </select>
+                </div>
+                <div class="modal-buttons">
+                    <button type="button" class="btn-cancel" onclick="closeEditTransactionModal()">Cancel</button>
+                    <button type="submit" class="btn-save">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <script>
         // Get current customer phone from sessionStorage
         const sessionCustomer = sessionStorage.getItem('currentCustomer');
@@ -754,10 +804,10 @@
         if (customer.transactions && customer.transactions.length > 0) {
             tableBody.innerHTML = '';
             
-            customer.transactions.forEach(transaction => {
+            customer.transactions.forEach((transaction, index) => {
                 const row = document.createElement('tr');
                 
-                const date = new Date(transaction.date).toLocaleDateString('en-PK');
+                const date = transaction.date;
                 const amount = transaction.amount.toLocaleString();
                 const typeClass = transaction.type === 'debit' ? 'debit' : 'credit';
                 const typeText = transaction.type === 'debit' ? 'Purchase' : 'Payment';
@@ -767,6 +817,7 @@
                     <td data-label="Description">${transaction.description}</td>
                     <td data-label="Type"><span class="type-badge ${typeClass}">${typeText}</span></td>
                     <td data-label="Amount (PKR)" class="amount ${typeClass}">PKR ${amount}</td>
+                    <td data-label="Actions"><button class="edit-btn" onclick="showEditTransactionModal(${index})">Edit</button></td>
                 `;
                 
                 tableBody.appendChild(row);
@@ -899,6 +950,68 @@
             
             // Refresh the page to show updated data
             location.reload();
+        });
+
+        let editTransactionIndex = null;
+        let originalAmount = 0;
+        let originalType = '';
+
+        function showEditTransactionModal(index) {
+            editTransactionIndex = index;
+            const transaction = customer.transactions[index];
+            document.getElementById('editDate').value = transaction.date;
+            document.getElementById('editDescription').value = transaction.description;
+            document.getElementById('editAmount').value = transaction.amount;
+            document.getElementById('editType').value = transaction.type;
+            originalAmount = transaction.amount;
+            originalType = transaction.type;
+            document.getElementById('editTransactionModal').style.display = 'block';
+        }
+
+        function closeEditTransactionModal() {
+            document.getElementById('editTransactionModal').style.display = 'none';
+            editTransactionIndex = null;
+        }
+
+        document.getElementById('editTransactionForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            if (editTransactionIndex === null) return;
+
+            // Get new values
+            const newDate = document.getElementById('editDate').value;
+            const newDescription = document.getElementById('editDescription').value;
+            const newAmount = parseFloat(document.getElementById('editAmount').value);
+            const newType = document.getElementById('editType').value;
+
+            // Adjust balance: remove old, add new
+            if (originalType === 'debit') {
+                customer.balance -= originalAmount;
+            } else {
+                customer.balance += originalAmount;
+            }
+            if (newType === 'debit') {
+                customer.balance += newAmount;
+            } else {
+                customer.balance -= newAmount;
+            }
+
+            // Update transaction
+            customer.transactions[editTransactionIndex] = {
+                date: newDate,
+                description: newDescription,
+                amount: newAmount,
+                type: newType
+            };
+
+            // Save changes
+            customers[customerPhone] = customer;
+            localStorage.setItem('dawood_ab_collection_customers', JSON.stringify(customers));
+            sessionStorage.setItem('currentCustomer', JSON.stringify(customer));
+
+            // Refresh page to update UI
+            location.reload();
+
+            closeEditTransactionModal();
         });
 
         // Export customer ledger as JPG image
