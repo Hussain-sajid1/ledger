@@ -584,12 +584,16 @@
                 <h1>My Ledger</h1>
                 <div class="customer-info">
                     <div class="info-item">
-                        <h3>Customer Name</h3>
+                        <h3>Customer Name <button id="editCustomerInfoBtn" title="Edit Name/City" style="background:none;border:none;cursor:pointer;font-size:1.1em;color:#007bff;margin-left:0.5em;vertical-align:middle;">✏️</button></h3>
                         <p id="customerName">Loading...</p>
                     </div>
                     <div class="info-item">
                         <h3>Phone Number</h3>
                         <p id="customerPhone">Loading...</p>
+                    </div>
+                    <div class="info-item">
+                        <h3>City</h3>
+                        <p id="customerCity">Loading...</p>
                     </div>
                 </div>
                 <div class="balance-card">
@@ -706,6 +710,30 @@
         </div>
     </div>
 
+    <!-- Edit Customer Info Modal -->
+    <div id="editCustomerInfoModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Edit Customer Info</h2>
+                <span class="close" onclick="closeEditCustomerInfoModal()">&times;</span>
+            </div>
+            <form id="editCustomerInfoForm">
+                <div class="form-group">
+                    <label for="editCustomerName">Name</label>
+                    <input type="text" id="editCustomerName" required>
+                </div>
+                <div class="form-group">
+                    <label for="editCustomerCity">City</label>
+                    <input type="text" id="editCustomerCity" required>
+                </div>
+                <div class="modal-buttons">
+                    <button type="button" class="btn-cancel" onclick="closeEditCustomerInfoModal()">Cancel</button>
+                    <button type="submit" class="btn-save">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <!-- Edit Transaction Modal -->
     <div id="editTransactionModal" class="modal">
         <div class="modal-content">
@@ -786,6 +814,7 @@
         // Populate customer information
         document.getElementById('customerName').textContent = customer.name;
         document.getElementById('customerPhone').textContent = customer.phone;
+        document.getElementById('customerCity').textContent = customer.city ? customer.city : 'Not set';
         
         // Format and display balance
         const balance = customer.balance;
@@ -877,12 +906,16 @@
         window.onclick = function(event) {
             const paymentModal = document.getElementById('addPaymentModal');
             const purchaseModal = document.getElementById('addPurchaseModal');
+            const editCustomerInfoModal = document.getElementById('editCustomerInfoModal');
             
             if (event.target === paymentModal) {
                 closeAddPaymentModal();
             }
             if (event.target === purchaseModal) {
                 closeAddPurchaseModal();
+            }
+            if (event.target === editCustomerInfoModal) {
+                closeEditCustomerInfoModal();
             }
         }
 
@@ -1012,6 +1045,40 @@
             location.reload();
 
             closeEditTransactionModal();
+        });
+
+        // Edit Customer Info Modal logic
+        document.getElementById('editCustomerInfoBtn').onclick = function() {
+            document.getElementById('editCustomerName').value = customer.name;
+            document.getElementById('editCustomerCity').value = customer.city ? customer.city : '';
+            document.getElementById('editCustomerInfoModal').style.display = 'block';
+        };
+        function closeEditCustomerInfoModal() {
+            document.getElementById('editCustomerInfoModal').style.display = 'none';
+        }
+        document.getElementById('editCustomerInfoForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const newName = document.getElementById('editCustomerName').value.trim();
+            const newCity = document.getElementById('editCustomerCity').value.trim();
+            if (!newName || !newCity) {
+                alert('Please fill in both name and city.');
+                return;
+            }
+            customer.name = newName;
+            customer.city = newCity;
+            customers[customerPhone] = customer;
+            localStorage.setItem('dawood_ab_collection_customers', JSON.stringify(customers));
+            sessionStorage.setItem('currentCustomer', JSON.stringify(customer));
+            document.getElementById('customerName').textContent = newName;
+            document.getElementById('customerCity').textContent = newCity;
+            closeEditCustomerInfoModal();
+        });
+        // Close modal when clicking outside
+        window.addEventListener('click', function(event) {
+            const editModal = document.getElementById('editCustomerInfoModal');
+            if (event.target === editModal) {
+                closeEditCustomerInfoModal();
+            }
         });
 
         // Export customer ledger as JPG image
