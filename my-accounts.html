@@ -95,6 +95,13 @@
             text-align: left;
             border-bottom: 1px solid #e1e1e1;
         }
+        .banks-table tr[data-bank-key] {
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .banks-table tr[data-bank-key]:hover {
+            background: #e6f0ff;
+        }
         .banks-table th {
             background: #667eea;
             color: white;
@@ -275,14 +282,28 @@
             function renderBanksTable() {
                 const tbody = document.getElementById('banksTableBody');
                 tbody.innerHTML = '';
+                // Load bank ledgers for up-to-date balances
+                let ledgers = {};
+                if (localStorage.getItem('dawood_ab_collection_bank_ledgers')) {
+                    try { ledgers = JSON.parse(localStorage.getItem('dawood_ab_collection_bank_ledgers')); } catch (e) { ledgers = {}; }
+                }
                 banks.forEach(bank => {
-                    const balance = accounts[bank.key] !== undefined ? accounts[bank.key] : 0;
+                    let balance = 0;
+                    if (ledgers[bank.key] && typeof ledgers[bank.key].balance === 'number') {
+                        balance = ledgers[bank.key].balance;
+                    } else if (accounts[bank.key] !== undefined) {
+                        balance = accounts[bank.key];
+                    }
                     const row = document.createElement('tr');
+                    row.setAttribute('data-bank-key', bank.key);
                     row.innerHTML = `
                         <td data-label="Bank Name">${bank.name}</td>
                         <td data-label="Balance (PKR)" class="balance">PKR ${parseFloat(balance).toLocaleString()}</td>
-                        <td data-label="Actions"><button class="edit-btn" onclick="showEditBalanceModal('${bank.key}')">Edit</button></td>
+                        <td data-label="Actions"><button class="edit-btn" onclick="event.stopPropagation();showEditBalanceModal('${bank.key}')">Edit</button></td>
                     `;
+                    row.addEventListener('click', function() {
+                        window.location.href = `bank-ledger.html?bank=${encodeURIComponent(bank.key)}`;
+                    });
                     tbody.appendChild(row);
                 });
             }

@@ -1,0 +1,744 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bank Ledger - DAWOOD AB COLLECTION</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 1rem 0;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        .nav {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 2rem;
+        }
+        .logo {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #333;
+            text-decoration: none;
+        }
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+        }
+        .nav-links a {
+            text-decoration: none;
+            color: #333;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+        .nav-links a:hover {
+            background-color: #f0f0f0;
+        }
+        .main-content {
+            flex: 1;
+            padding: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
+        }
+        .ledger-container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+        }
+        .ledger-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2rem;
+            text-align: center;
+        }
+        .ledger-header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+        .bank-info {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            gap: 2rem;
+            margin-top: 1rem;
+        }
+        .info-item {
+            text-align: center;
+        }
+        .info-item h3 {
+            font-size: 1.2rem;
+            margin-bottom: 0.5rem;
+            opacity: 0.9;
+        }
+        .info-item p {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+        .balance-card {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin-top: 1rem;
+        }
+        .balance-amount {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+        .balance-label {
+            opacity: 0.9;
+            font-size: 1.1rem;
+        }
+        .ledger-content {
+            padding: 2rem;
+        }
+        .section-title {
+            color: #333;
+            margin-bottom: 1.5rem;
+            font-size: 1.5rem;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 0.5rem;
+        }
+        .transactions-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        .transactions-table th,
+        .transactions-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid #e1e1e1;
+        }
+        .transactions-table th {
+            background: #667eea;
+            color: white;
+            font-weight: 600;
+        }
+        .transactions-table tr:hover {
+            background: #f8f9fa;
+        }
+        .amount {
+            font-weight: bold;
+        }
+        .amount.debit {
+            color: #dc3545;
+        }
+        .amount.credit {
+            color: #28a745;
+        }
+        .type-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        .type-badge.debit {
+            background: #ffe6e6;
+            color: #dc3545;
+        }
+        .type-badge.credit {
+            background: #e6ffe6;
+            color: #28a745;
+        }
+        .no-transactions {
+            text-align: center;
+            padding: 3rem;
+            color: #666;
+            font-style: italic;
+        }
+        .admin-buttons {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        .deposit-btn {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.3s;
+        }
+        .deposit-btn:hover {
+            background: #218838;
+        }
+        .withdraw-btn {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.3s;
+        }
+        .withdraw-btn:hover {
+            background: #c82333;
+        }
+        .edit-btn {
+            background: #ffc107;
+            color: #333;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-left: 0.5rem;
+            transition: background-color 0.3s;
+        }
+        .edit-btn:hover {
+            background: #e0a800;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(5px);
+        }
+        .modal-content {
+            background: white;
+            margin: 5% auto;
+            padding: 2rem;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            position: relative;
+        }
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid #667eea;
+        }
+        .modal-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #333;
+        }
+        .close {
+            color: #aaa;
+            font-size: 2rem;
+            font-weight: bold;
+            cursor: pointer;
+            line-height: 1;
+        }
+        .close:hover {
+            color: #333;
+        }
+        .form-group {
+            margin-bottom: 1rem;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #333;
+            font-weight: 500;
+        }
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid #e1e1e1;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        .form-group textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+        .modal-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+            margin-top: 2rem;
+        }
+        .btn-cancel {
+            background: #6c757d;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.3s;
+        }
+        .btn-cancel:hover {
+            background: #5a6268;
+        }
+        .btn-save {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.3s;
+        }
+        .btn-save:hover {
+            background: #45a049;
+        }
+        @media (max-width: 768px) {
+            .ledger-header h1 { font-size: 2rem; }
+            .bank-info { flex-direction: column; gap: 1rem; }
+            .transactions-table { font-size: 0.9rem; }
+            .transactions-table th, .transactions-table td { padding: 0.75rem 0.5rem; }
+        }
+        @media (max-width: 600px) {
+            html, body { overflow-x: hidden !important; max-width: 100vw !important; }
+            .main-content, .ledger-container, .ledger-header, .ledger-content {
+                max-width: 100vw !important;
+                box-sizing: border-box;
+                word-break: break-word;
+            }
+            .main-content { padding: 1rem 0.25rem; }
+            .ledger-header { padding: 1.2rem 0.5rem; }
+            .ledger-header h1 { font-size: 1.5rem; }
+            .bank-info { flex-direction: column; gap: 0.5rem; align-items: stretch; }
+            .info-item h3 { font-size: 1rem; }
+            .info-item p { font-size: 1.1rem; }
+            .balance-card { margin-top: 0.5rem; padding: 1rem 0.5rem; }
+            .balance-amount { font-size: 1.5rem; }
+            .ledger-content { padding: 1rem 0.25rem; }
+            .section-title { font-size: 1.1rem; padding-bottom: 0.3rem; margin-bottom: 1rem; }
+            .admin-buttons { flex-direction: column; gap: 0.5rem; margin-bottom: 1rem; }
+            .deposit-btn, .withdraw-btn { width: 100%; font-size: 1rem; padding: 0.75rem 0; margin-left: 0 !important; }
+            .transactions-table, .transactions-table thead, .transactions-table tbody, .transactions-table th, .transactions-table td, .transactions-table tr {
+                display: block; width: 100%;
+            }
+            .transactions-table thead { display: none; }
+            .transactions-table tr {
+                margin-bottom: 1.2rem;
+                background: #fff;
+                border-radius: 10px;
+                box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+                padding: 0.5rem 0.25rem;
+            }
+            .transactions-table td {
+                padding: 0.5rem 0.5rem;
+                text-align: left;
+                position: relative;
+                word-break: break-word;
+                overflow-wrap: break-word;
+            }
+            .transactions-table td:before {
+                content: attr(data-label);
+                font-weight: bold;
+                color: #667eea;
+                display: block;
+                margin-bottom: 0.2rem;
+                font-size: 0.95em;
+            }
+            .no-transactions { padding: 2rem 0.5rem; font-size: 1rem; }
+            .modal-content { width: 98vw; max-width: 99vw; min-width: 0; margin: 8vw auto; padding: 1rem 0.5rem; border-radius: 10px; box-sizing: border-box; max-height: 90vh; overflow-y: auto; }
+            .modal-header { flex-direction: column; align-items: flex-start; gap: 0.5rem; }
+            .modal-title { font-size: 1.1rem; }
+            .modal-buttons { flex-direction: column; gap: 0.5rem; width: 100%; }
+            .btn-cancel, .btn-save { width: 100%; font-size: 1rem; padding: 0.75rem 0; }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <nav class="nav">
+            <a href="my-accounts.html" class="logo">DAWOOD AB COLLECTION</a>
+            <div class="nav-links">
+                <a href="owner-login.html">Owner Login</a>
+                <a href="owner-dashboard.html" class="logout-btn">Back to Dashboard</a>
+            </div>
+        </nav>
+    </header>
+    <main class="main-content">
+        <a href="my-accounts.html" id="backToAccountsBtn" class="btn" style="background: #007bff; color: white; margin-bottom: 1.5rem; display: inline-block;">← Back to Accounts</a>
+        <div class="ledger-container">
+            <div class="ledger-header">
+                <h1 id="bankName">Bank Ledger</h1>
+                <div class="bank-info">
+                    <div class="info-item">
+                        <h3>Bank Name</h3>
+                        <p id="bankNameInfo">Loading...</p>
+                    </div>
+                </div>
+                <div class="balance-card">
+                    <div class="balance-amount" id="currentBalance">Loading...</div>
+                    <div class="balance-label">Current Balance</div>
+                </div>
+            </div>
+            <div class="ledger-content">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                    <h2 class="section-title" style="margin-bottom: 0;">Transaction History</h2>
+                    <div class="admin-buttons">
+                        <button class="deposit-btn" onclick="showDepositModal()">Deposit</button>
+                        <button class="withdraw-btn" onclick="showWithdrawModal()">Withdraw</button>
+                    </div>
+                </div>
+                <div id="transactionsContainer">
+                    <table class="transactions-table">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Description</th>
+                                <th>Type</th>
+                                <th>Amount (PKR)</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="transactionsTableBody">
+                            <tr>
+                                <td colspan="5" class="no-transactions">Loading transactions...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+    <!-- Deposit Modal -->
+    <div id="depositModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Deposit</h2>
+                <span class="close" onclick="closeDepositModal()">&times;</span>
+            </div>
+            <form id="depositForm">
+                <div class="form-group">
+                    <label for="depositDate">Date</label>
+                    <input type="date" id="depositDate" required>
+                </div>
+                <div class="form-group">
+                    <label for="depositAmount">Amount (PKR)</label>
+                    <input type="number" id="depositAmount" min="1" step="0.01" required>
+                </div>
+                <div class="form-group">
+                    <label for="depositDescription">Description</label>
+                    <textarea id="depositDescription" placeholder="Enter deposit description (e.g., Cash Deposit, Cheque, etc.)" required></textarea>
+                </div>
+                <div class="modal-buttons">
+                    <button type="button" class="btn-cancel" onclick="closeDepositModal()">Cancel</button>
+                    <button type="submit" class="btn-save">Add Deposit</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <!-- Withdraw Modal -->
+    <div id="withdrawModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Withdraw</h2>
+                <span class="close" onclick="closeWithdrawModal()">&times;</span>
+            </div>
+            <form id="withdrawForm">
+                <div class="form-group">
+                    <label for="withdrawDate">Date</label>
+                    <input type="date" id="withdrawDate" required>
+                </div>
+                <div class="form-group">
+                    <label for="withdrawAmount">Amount (PKR)</label>
+                    <input type="number" id="withdrawAmount" min="1" step="0.01" required>
+                </div>
+                <div class="form-group">
+                    <label for="withdrawDescription">Description</label>
+                    <textarea id="withdrawDescription" placeholder="Enter withdrawal description (e.g., ATM, Cheque, etc.)" required></textarea>
+                </div>
+                <div class="modal-buttons">
+                    <button type="button" class="btn-cancel" onclick="closeWithdrawModal()">Cancel</button>
+                    <button type="submit" class="btn-save">Add Withdraw</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <!-- Edit Transaction Modal -->
+    <div id="editTransactionModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Edit Transaction</h2>
+                <span class="close" onclick="closeEditTransactionModal()">&times;</span>
+            </div>
+            <form id="editTransactionForm">
+                <div class="form-group">
+                    <label for="editDate">Date</label>
+                    <input type="date" id="editDate" required>
+                </div>
+                <div class="form-group">
+                    <label for="editDescription">Description</label>
+                    <input type="text" id="editDescription" required>
+                </div>
+                <div class="form-group">
+                    <label for="editAmount">Amount (PKR)</label>
+                    <input type="number" id="editAmount" required style="border: 2px solid #ffc107; background: #fffbe6;">
+                </div>
+                <div class="form-group">
+                    <label for="editType">Type</label>
+                    <select id="editType" required>
+                        <option value="debit">Withdraw</option>
+                        <option value="credit">Deposit</option>
+                    </select>
+                </div>
+                <div class="modal-buttons">
+                    <button type="button" class="btn-cancel" onclick="closeEditTransactionModal()">Cancel</button>
+                    <button type="submit" class="btn-save">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Get bank key from URL
+        function getBankKey() {
+            const params = new URLSearchParams(window.location.search);
+            return params.get('bank');
+        }
+        const bankKey = getBankKey();
+        if (!bankKey) {
+            window.location.href = 'my-accounts.html';
+            return;
+        }
+        // Get bank name from my-accounts storage
+        let banks = [
+            { key: 'meezan', name: 'Meezan Bank' },
+            { key: 'habib', name: 'Habib Bank' },
+            { key: 'ubl', name: 'UBL' },
+            { key: 'jazzcash', name: 'Jazz Cash' }
+        ];
+        if (localStorage.getItem('dawood_ab_collection_custom_banks')) {
+            try {
+                const customBanks = JSON.parse(localStorage.getItem('dawood_ab_collection_custom_banks'));
+                if (Array.isArray(customBanks)) {
+                    banks = banks.concat(customBanks);
+                }
+            } catch (e) {}
+        }
+        const bank = banks.find(b => b.key === bankKey);
+        if (!bank) {
+            window.location.href = 'my-accounts.html';
+            return;
+        }
+        document.getElementById('bankName').textContent = bank.name + ' Ledger';
+        document.getElementById('bankNameInfo').textContent = bank.name;
+        // Ledger data storage
+        let ledgers = {};
+        if (localStorage.getItem('dawood_ab_collection_bank_ledgers')) {
+            try {
+                ledgers = JSON.parse(localStorage.getItem('dawood_ab_collection_bank_ledgers'));
+            } catch (e) { ledgers = {}; }
+        }
+        if (!ledgers[bankKey]) {
+            ledgers[bankKey] = { balance: 0, transactions: [] };
+        }
+        let ledger = ledgers[bankKey];
+        // Get initial balance from accounts if no transactions
+        if (ledger.transactions.length === 0 && localStorage.getItem('dawood_ab_collection_accounts')) {
+            try {
+                const accounts = JSON.parse(localStorage.getItem('dawood_ab_collection_accounts'));
+                if (accounts[bankKey] !== undefined) {
+                    ledger.balance = accounts[bankKey];
+                }
+            } catch (e) {}
+        }
+        // Display balance
+        function updateBalanceDisplay() {
+            const balance = ledger.balance;
+            const balanceElement = document.getElementById('currentBalance');
+            balanceElement.textContent = `PKR ${balance.toLocaleString()}`;
+            balanceElement.style.color = balance >= 0 ? '#28a745' : '#dc3545';
+            // Also update dawood_ab_collection_accounts for this bank
+            let accounts = {};
+            if (localStorage.getItem('dawood_ab_collection_accounts')) {
+                try { accounts = JSON.parse(localStorage.getItem('dawood_ab_collection_accounts')); } catch (e) { accounts = {}; }
+            }
+            accounts[bankKey] = balance;
+            localStorage.setItem('dawood_ab_collection_accounts', JSON.stringify(accounts));
+        }
+        updateBalanceDisplay();
+        // Render transactions
+        function renderTransactions() {
+            const tableBody = document.getElementById('transactionsTableBody');
+            if (ledger.transactions && ledger.transactions.length > 0) {
+                tableBody.innerHTML = '';
+                ledger.transactions.forEach((transaction, index) => {
+                    const row = document.createElement('tr');
+                    const date = transaction.date;
+                    const amount = transaction.amount.toLocaleString();
+                    const typeClass = transaction.type === 'debit' ? 'debit' : 'credit';
+                    const typeText = transaction.type === 'debit' ? 'Withdraw' : 'Deposit';
+                    row.innerHTML = `
+                        <td data-label="Date">${date}</td>
+                        <td data-label="Description">${transaction.description}</td>
+                        <td data-label="Type"><span class="type-badge ${typeClass}">${typeText}</span></td>
+                        <td data-label="Amount (PKR)" class="amount ${typeClass}">PKR ${amount}</td>
+                        <td data-label="Actions"><button class="edit-btn" onclick="showEditTransactionModal(${index})">Edit</button></td>
+                    `;
+                    tableBody.appendChild(row);
+                });
+            } else {
+                tableBody.innerHTML = '<tr><td colspan="5" class="no-transactions">No transactions found</td></tr>';
+            }
+        }
+        renderTransactions();
+        // Deposit Modal
+        window.showDepositModal = function() {
+            const depositDate = document.getElementById('depositDate');
+            depositDate.value = new Date().toISOString().split('T')[0];
+            document.getElementById('depositAmount').value = '';
+            document.getElementById('depositDescription').value = '';
+            document.getElementById('depositModal').style.display = 'block';
+        }
+        window.closeDepositModal = function() {
+            document.getElementById('depositModal').style.display = 'none';
+            document.getElementById('depositForm').reset();
+        }
+        document.getElementById('depositForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const depositDate = document.getElementById('depositDate').value;
+            const depositAmount = parseFloat(document.getElementById('depositAmount').value);
+            const depositDescription = document.getElementById('depositDescription').value;
+            if (!depositDate || !depositAmount || !depositDescription) {
+                alert('Please fill in all fields');
+                return;
+            }
+            ledger.transactions.unshift({
+                date: depositDate,
+                description: depositDescription,
+                amount: depositAmount,
+                type: 'credit'
+            });
+            ledger.balance += depositAmount;
+            ledgers[bankKey] = ledger;
+            localStorage.setItem('dawood_ab_collection_bank_ledgers', JSON.stringify(ledgers));
+            updateBalanceDisplay();
+            renderTransactions();
+            closeDepositModal();
+        });
+        // Withdraw Modal
+        window.showWithdrawModal = function() {
+            const withdrawDate = document.getElementById('withdrawDate');
+            withdrawDate.value = new Date().toISOString().split('T')[0];
+            document.getElementById('withdrawAmount').value = '';
+            document.getElementById('withdrawDescription').value = '';
+            document.getElementById('withdrawModal').style.display = 'block';
+        }
+        window.closeWithdrawModal = function() {
+            document.getElementById('withdrawModal').style.display = 'none';
+            document.getElementById('withdrawForm').reset();
+        }
+        document.getElementById('withdrawForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const withdrawDate = document.getElementById('withdrawDate').value;
+            const withdrawAmount = parseFloat(document.getElementById('withdrawAmount').value);
+            const withdrawDescription = document.getElementById('withdrawDescription').value;
+            if (!withdrawDate || !withdrawAmount || !withdrawDescription) {
+                alert('Please fill in all fields');
+                return;
+            }
+            ledger.transactions.unshift({
+                date: withdrawDate,
+                description: withdrawDescription,
+                amount: withdrawAmount,
+                type: 'debit'
+            });
+            ledger.balance -= withdrawAmount;
+            ledgers[bankKey] = ledger;
+            localStorage.setItem('dawood_ab_collection_bank_ledgers', JSON.stringify(ledgers));
+            updateBalanceDisplay();
+            renderTransactions();
+            closeWithdrawModal();
+        });
+        // Edit Transaction Modal
+        let editTransactionIndex = null;
+        let originalAmount = 0;
+        let originalType = '';
+        window.showEditTransactionModal = function(index) {
+            editTransactionIndex = index;
+            const transaction = ledger.transactions[index];
+            document.getElementById('editDate').value = transaction.date;
+            document.getElementById('editDescription').value = transaction.description;
+            document.getElementById('editAmount').value = transaction.amount;
+            document.getElementById('editType').value = transaction.type;
+            originalAmount = transaction.amount;
+            originalType = transaction.type;
+            document.getElementById('editTransactionModal').style.display = 'block';
+        }
+        window.closeEditTransactionModal = function() {
+            document.getElementById('editTransactionModal').style.display = 'none';
+            editTransactionIndex = null;
+        }
+        document.getElementById('editTransactionForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            if (editTransactionIndex === null) return;
+            const newDate = document.getElementById('editDate').value;
+            const newDescription = document.getElementById('editDescription').value;
+            const newAmount = parseFloat(document.getElementById('editAmount').value);
+            const newType = document.getElementById('editType').value;
+            // Adjust balance: remove old, add new
+            if (originalType === 'debit') {
+                ledger.balance += originalAmount;
+            } else {
+                ledger.balance -= originalAmount;
+            }
+            if (newType === 'debit') {
+                ledger.balance -= newAmount;
+            } else {
+                ledger.balance += newAmount;
+            }
+            // Update transaction
+            ledger.transactions[editTransactionIndex] = {
+                date: newDate,
+                description: newDescription,
+                amount: newAmount,
+                type: newType
+            };
+            ledgers[bankKey] = ledger;
+            localStorage.setItem('dawood_ab_collection_bank_ledgers', JSON.stringify(ledgers));
+            updateBalanceDisplay();
+            renderTransactions();
+            closeEditTransactionModal();
+        });
+        // Close modals when clicking outside
+        window.onclick = function(event) {
+            const depositModal = document.getElementById('depositModal');
+            const withdrawModal = document.getElementById('withdrawModal');
+            const editModal = document.getElementById('editTransactionModal');
+            if (event.target === depositModal) closeDepositModal();
+            if (event.target === withdrawModal) closeWithdrawModal();
+            if (event.target === editModal) closeEditTransactionModal();
+        }
+    });
+    </script>
+</body>
+</html> 
