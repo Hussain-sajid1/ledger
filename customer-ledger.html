@@ -3,7 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Ledger - DAWOOD AB COLLECTION</title>
+    <title>My Ledger - LEDGER</title>
+    <script>
+        if ('serviceWorker' in navigator) {
+          navigator.serviceWorker.register('service-worker.js');
+        }
+    </script>
     <style>
         * {
             margin: 0;
@@ -569,7 +574,7 @@
 <body>
     <header class="header">
         <nav class="nav">
-            <a href="index.html" class="logo">DAWOOD AB COLLECTION</a>
+            <a href="index.html" class="logo">LEDGER</a>
             <div class="nav-links">
                 <a href="owner-login.html">Owner Login</a>
                 <a href="owner-dashboard.html" class="logout-btn">Back to Dashboard</a>
@@ -1113,7 +1118,7 @@
             ctx.fillStyle = '#ffffff';
             ctx.font = 'bold 28px Arial';
             ctx.textAlign = 'center';
-            ctx.fillText('DAWOOD AB COLLECTION - CUSTOMER LEDGER', canvas.width / 2, 35);
+            ctx.fillText('LEDGER - CUSTOMER LEDGER', canvas.width / 2, 35);
             
             ctx.font = '16px Arial';
             ctx.fillText(`Generated on: ${new Date().toLocaleDateString('en-PK')}`, canvas.width / 2, 60);
@@ -1178,7 +1183,7 @@
             ctx.fillStyle = '#666666';
             ctx.font = '12px Arial';
             ctx.textAlign = 'center';
-            ctx.fillText('DAWOOD AB COLLECTION - Premium Unstitched Fabric Store', canvas.width / 2, canvasHeight - 20);
+            ctx.fillText('LEDGER - Premium Unstitched Fabric Store', canvas.width / 2, canvasHeight - 20);
             
             // Convert canvas to blob and download
             canvas.toBlob(function(blob) {

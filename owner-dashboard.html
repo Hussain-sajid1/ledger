@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Owner Dashboard - DAWOOD AB COLLECTION</title>
+    <title>Owner Dashboard - LEDGER</title>
     <style>
         * {
             margin: 0;
@@ -513,15 +513,24 @@
             }
         }
     </style>
+    <!-- JSZip CDN for zipping files -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+    <script>
+        if ('serviceWorker' in navigator) {
+          navigator.serviceWorker.register('service-worker.js');
+        }
+    </script>
 </head>
 <body>
     <header class="header">
         <nav class="nav">
             <div style="display:flex;align-items:center;gap:1rem;">
                 <a href="my-accounts.html" id="myAccountsBtn" style="background:#007bff;color:white;padding:0.5rem 1.2rem;border-radius:6px;text-decoration:none;font-weight:600;font-size:1rem;box-shadow:0 2px 8px rgba(0,0,0,0.07);transition:background 0.2s;">My Accounts</a>
-                <a href="index.html" class="logo">DAWOOD AB COLLECTION</a>
+                <a href="index.html" class="logo">LEDGER</a>
             </div>
             <div class="nav-links">
+                <button id="downloadAllBtn" style="background:#ff9800;color:white;padding:0.5rem 1.2rem;border-radius:6px;text-decoration:none;font-weight:600;font-size:1rem;box-shadow:0 2px 8px rgba(0,0,0,0.07);transition:background 0.2s;border:none;cursor:pointer;">Download</button>
                 <a href="owner-login.html">Owner Login</a>
                 <a href="owner-dashboard.html" class="logout-btn">Back to Dashboard</a>
             </div>
@@ -966,7 +975,7 @@
             ctx.fillStyle = '#ffffff';
             ctx.font = 'bold 32px Arial';
             ctx.textAlign = 'center';
-            ctx.fillText('DAWOOD AB COLLECTION - LEDGER REPORT', canvas.width / 2, 40);
+            ctx.fillText('LEDGER - LEDGER REPORT', canvas.width / 2, 40);
             
             ctx.font = '16px Arial';
             ctx.fillText(`Generated on: ${new Date().toLocaleDateString('en-PK')}`, canvas.width / 2, 65);
@@ -1033,14 +1042,14 @@
             ctx.fillStyle = '#666666';
             ctx.font = '12px Arial';
             ctx.textAlign = 'center';
-            ctx.fillText('DAWOOD AB COLLECTION - Premium Unstitched Fabric Store', canvas.width / 2, canvas.height - 20);
+            ctx.fillText('LEDGER - Premium Unstitched Fabric Store', canvas.width / 2, canvas.height - 20);
             
             // Convert canvas to blob and download
             canvas.toBlob(function(blob) {
                 const url = URL.createObjectURL(blob);
                 const a = document.createElement('a');
                 a.href = url;
-                a.download = `DAWOOD_AB_COLLECTION_LEDGER_${new Date().toISOString().split('T')[0]}.jpg`;
+                a.download = `LEDGER_LEDGER_${new Date().toISOString().split('T')[0]}.jpg`;
                 document.body.appendChild(a);
                 a.click();
                 document.body.removeChild(a);
@@ -1062,6 +1071,62 @@
         // Initialize dashboard
         updateDashboardStats();
         populateCustomersTable();
+
+        // Attach functions to window for inline onclick handlers
+        window.showAddCustomerModal = showAddCustomerModal;
+        window.exportLedgerAsImage = exportLedgerAsImage;
+        window.saveProgress = saveProgress;
+
+        document.getElementById('downloadAllBtn').addEventListener('click', async function() {
+            // List of HTML files to include
+            const htmlFiles = [
+                'index.html',
+                'customer-ledger.html',
+                'owner-dashboard.html',
+                'owner-login.html',
+                'customer-login.html',
+                'my-accounts.html',
+                'bank-ledger.html'
+            ];
+            // Gather all data as JSON strings
+            const dataKeys = [
+                'dawood_ab_collection_customers',
+                'dawood_ab_collection_accounts',
+                'dawood_ab_collection_custom_banks',
+                'dawood_ab_collection_bank_ledgers'
+            ];
+            const dataMap = {};
+            dataKeys.forEach(key => {
+                const value = localStorage.getItem(key);
+                if (value) dataMap[key] = value;
+            });
+            // Prepare the data injection script
+            function getDataScript() {
+                var jsonBlock = '<script type="application/json" id="offline-data">' + JSON.stringify(dataMap) + '<\/script>';
+                var loader = '<script>(function(){var dataScript=document.getElementById("offline-data");if(dataScript){try{var data=JSON.parse(dataScript.textContent);for(var key in data){localStorage.setItem(key,typeof data[key]==="string"?data[key]:JSON.stringify(data[key]));}}catch(e){}}})();<\/script>';
+                return jsonBlock + '\n' + loader;
+            }
+            // For each HTML file, fetch, inject data, and trigger download
+            for (const file of htmlFiles) {
+                try {
+                    const res = await fetch(file);
+                    if (res.ok) {
+                        let text = await res.text();
+                        // Update navigation links to point to local HTML files
+                        text = text.replace(/href="(index|customer-ledger|owner-dashboard|owner-login|customer-login|my-accounts|bank-ledger)\.html"/g, 'href="$1.html"');
+                        // Inject the data script as the first script in <head>
+                        text = text.replace(/<head>/i, function(match) {
+                            return match + '\n' + getDataScript();
+                        });
+                        // Download as a single HTML file
+                        const blob = new Blob([text], {type: 'text/html'});
+                        saveAs(blob, 'offline_' + file);
+                        // Wait a bit between downloads to avoid browser blocking
+                        await new Promise(r => setTimeout(r, 300));
+                    }
+                } catch (e) {}
+            }
+        });
     </script>
 </body>
 </html> 

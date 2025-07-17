@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bank Ledger - DAWOOD AB COLLECTION</title>
+    <title>Bank Ledger - LEDGER</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
@@ -373,11 +373,16 @@
             .btn-cancel, .btn-save { width: 100%; font-size: 1rem; padding: 0.75rem 0; }
         }
     </style>
+    <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('service-worker.js');
+    }
+    </script>
 </head>
 <body>
     <header class="header">
         <nav class="nav">
-            <a href="my-accounts.html" class="logo">DAWOOD AB COLLECTION</a>
+            <a href="my-accounts.html" class="logo">LEDGER</a>
             <div class="nav-links">
                 <a href="owner-login.html">Owner Login</a>
                 <a href="owner-dashboard.html" class="logout-btn">Back to Dashboard</a>

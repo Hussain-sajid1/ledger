@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Owner Login - DAWOOD AB COLLECTION</title>
+    <title>Owner Login - LEDGER</title>
     <style>
         * {
             margin: 0;
@@ -180,11 +180,16 @@
             }
         }
     </style>
+    <script>
+        if ('serviceWorker' in navigator) {
+          navigator.serviceWorker.register('service-worker.js');
+        }
+    </script>
 </head>
 <body>
     <header class="header">
         <nav class="nav">
-            <a href="index.html" class="logo">DAWOOD AB COLLECTION</a>
+            <a href="index.html" class="logo">LEDGER</a>
             <div class="nav-links">
                 <a href="owner-login.html">Owner Login</a>
             </div>
