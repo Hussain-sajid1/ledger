@@ -530,7 +530,8 @@
                 <a href="index.html" class="logo">LEDGER</a>
             </div>
             <div class="nav-links">
-                <button id="downloadAllBtn" style="background:#ff9800;color:white;padding:0.5rem 1.2rem;border-radius:6px;text-decoration:none;font-weight:600;font-size:1rem;box-shadow:0 2px 8px rgba(0,0,0,0.07);transition:background 0.2s;border:none;cursor:pointer;">Download</button>
+                <button id="exportDataBtn" style="background:#4CAF50;color:white;padding:0.5rem 1.2rem;border-radius:6px;text-decoration:none;font-weight:600;font-size:1rem;box-shadow:0 2px 8px rgba(0,0,0,0.07);transition:background 0.2s;border:none;cursor:pointer;">Export Data</button>
+                <label for="importDataInput" style="background:#007bff;color:white;padding:0.5rem 1.2rem;border-radius:6px;text-decoration:none;font-weight:600;font-size:1rem;box-shadow:0 2px 8px rgba(0,0,0,0.07);transition:background 0.2s;border:none;cursor:pointer;display:inline-block;">Import Data<input type="file" id="importDataInput" accept="application/json" style="display:none;"></label>
                 <a href="owner-login.html">Owner Login</a>
                 <a href="owner-dashboard.html" class="logout-btn">Back to Dashboard</a>
             </div>
@@ -1076,6 +1077,45 @@
         window.showAddCustomerModal = showAddCustomerModal;
         window.exportLedgerAsImage = exportLedgerAsImage;
         window.saveProgress = saveProgress;
+
+        // Export Data Button Logic
+        document.getElementById('exportDataBtn').onclick = function() {
+            const data = localStorage.getItem('dawood_ab_collection_customers');
+            if (!data) {
+                alert('No data to export!');
+                return;
+            }
+            const blob = new Blob([data], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `ledger-data-${new Date().toISOString().split('T')[0]}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        };
+        // Import Data Button Logic
+        document.getElementById('importDataInput').onchange = function(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const imported = JSON.parse(e.target.result);
+                    if (typeof imported !== 'object' || Array.isArray(imported)) {
+                        alert('Invalid data format!');
+                        return;
+                    }
+                    localStorage.setItem('dawood_ab_collection_customers', JSON.stringify(imported));
+                    alert('Data imported successfully! The page will now reload.');
+                    location.reload();
+                } catch (err) {
+                    alert('Failed to import data: ' + err.message);
+                }
+            };
+            reader.readAsText(file);
+        };
 
         document.getElementById('downloadAllBtn').addEventListener('click', async function() {
             // List of HTML files to include
